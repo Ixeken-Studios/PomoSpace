@@ -59,51 +59,67 @@ class _DigitalClockState extends State<DigitalClock> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        // Analog Clock Background
-        SizedBox(
-          width: 300,
-          height: 300,
-          child: CustomPaint(painter: AnalogClockPainter(datetime: _now)),
-        ),
-        // Digital Clock Foreground
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final availableHeight = constraints.maxHeight;
+
+        // Similar to Pomodoro Timer, reserve some space
+        final double maxAllowedHeight = availableHeight - 40.0;
+        final double clockSize = maxAllowedHeight.clamp(120.0, 300.0);
+
+        final double timeFontSize = (clockSize * 0.25).clamp(24.0, 64.0);
+        final double dateFontSize = (clockSize * 0.08).clamp(12.0, 20.0);
+
+        return Stack(
+          alignment: Alignment.center,
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: Colors.white.withOpacity(0.1)),
-              ),
-              child: Text(
-                _timeString,
-                style: const TextStyle(
-                  fontSize: 64,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 2,
-                  color: Colors.white,
-                ),
-              ),
+            // Analog Clock Background
+            SizedBox(
+              width: clockSize,
+              height: clockSize,
+              child: CustomPaint(painter: AnalogClockPainter(datetime: _now)),
             ),
-            const SizedBox(height: 16),
-            Text(
-              _dateString,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w500,
-                color: Colors.white.withOpacity(0.7),
-                letterSpacing: 1.5,
-              ),
+            // Digital Clock Foreground
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: clockSize * 0.08,
+                    vertical: clockSize * 0.03,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: Colors.white.withOpacity(0.1)),
+                  ),
+                  child: Text(
+                    _timeString,
+                    style: TextStyle(
+                      fontSize: timeFontSize,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 2,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                SizedBox(height: clockSize * 0.05),
+                Text(
+                  _dateString,
+                  style: TextStyle(
+                    fontSize: dateFontSize,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white.withOpacity(0.7),
+                    letterSpacing: 1.5,
+                  ),
+                ),
+              ],
             ),
           ],
-        ),
-      ],
+        );
+      },
     );
   }
 }

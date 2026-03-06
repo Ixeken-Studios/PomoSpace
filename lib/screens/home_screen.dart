@@ -41,11 +41,12 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
 
           SafeArea(
-            child: Row(
-              children: [
-                // Left Side: Activity List with Glassmorphism
-                Expanded(
-                  flex: 4,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final isDesktop = constraints.maxHeight >= 600;
+
+                final activityListWidget = Expanded(
+                  flex: isDesktop ? 4 : 5,
                   child: ClipRRect(
                     child: BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
@@ -71,15 +72,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
-                ),
+                );
 
-                // Right Side: Time, Pomodoro, Shortcuts
-                Expanded(
-                  flex: 6,
+                final timerWidget = Expanded(
+                  flex: isDesktop ? 6 : 5,
                   child: DefaultTabController(
                     length: 2,
                     child: Padding(
-                      padding: const EdgeInsets.all(24.0),
+                      padding: EdgeInsets.all(isDesktop ? 24.0 : 16.0),
                       child: Column(
                         children: [
                           // TabBar for Pomodoro and Clock
@@ -150,33 +150,22 @@ class _HomeScreenState extends State<HomeScreen> {
                               ],
                             ),
                           ),
-                          const SizedBox(height: 24),
+                          const SizedBox(height: 16),
 
-                          // App Shortcuts and Home Button horizontally aligned at the bottom
+                          // App Shortcuts
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Expanded(child: AppShortcuts()),
-                              const SizedBox(width: 16),
-                              FloatingActionButton.extended(
-                                onPressed: () {
-                                  // Exit app / Navigate to Home
-                                  SystemNavigator.pop();
-                                },
-                                icon: const Icon(Icons.home),
-                                label: Text(AppLang.homeButton),
-                                backgroundColor: Colors.deepPurpleAccent,
-                                elevation: 8,
-                              ),
-                            ],
+                            children: [Expanded(child: AppShortcuts())],
                           ),
                         ],
                       ),
                     ),
                   ),
-                ),
-              ],
+                );
+
+                return Row(children: [activityListWidget, timerWidget]);
+              },
             ),
           ),
         ],

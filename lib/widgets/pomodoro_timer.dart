@@ -457,6 +457,19 @@ class _PomodoroTimerState extends State<PomodoroTimer>
     super.build(context); // Required for AutomaticKeepAliveClientMixin
     final color = _isFocusMode ? Colors.deepPurpleAccent : Colors.tealAccent;
 
+    // Use MediaQuery for explicit breakpoints
+    final screenHeight = MediaQuery.of(context).size.height;
+    final isMobile = screenHeight < 600;
+
+    // Explicit small sizes for mobile landscape
+    final double timerSize = isMobile ? 130.0 : 250.0;
+    final double timeFontSize = isMobile ? 32.0 : 56.0;
+    final double phaseFontSize = isMobile ? 14.0 : 20.0;
+
+    // Scale down buttons on mobile too
+    final double fabSize = isMobile ? 40.0 : 56.0;
+    final double iconSize = isMobile ? 24.0 : 32.0;
+
     return Stack(
       children: [
         Center(
@@ -479,13 +492,13 @@ class _PomodoroTimerState extends State<PomodoroTimer>
                         // Targeted Ripple Wave
                         CustomPaint(
                           painter: RipplePainter(_pulseAnimation.value, color),
-                          size: const Size(250, 250),
+                          size: Size(timerSize, timerSize),
                         ),
 
                         // Neon Glow Ring
                         Container(
-                          width: 250,
-                          height: 250,
+                          width: timerSize,
+                          height: timerSize,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             boxShadow: [
@@ -493,18 +506,18 @@ class _PomodoroTimerState extends State<PomodoroTimer>
                                 color: color.withOpacity(
                                   0.3 + (_breathAnimation.value * 0.1),
                                 ),
-                                blurRadius: 30 + (_breathAnimation.value * 10),
-                                spreadRadius: 5 + (_breathAnimation.value * 2),
+                                blurRadius: 15 + (_breathAnimation.value * 5),
+                                spreadRadius: 3 + (_breathAnimation.value * 2),
                               ),
                             ],
                           ),
                         ),
                         SizedBox(
-                          width: 250,
-                          height: 250,
+                          width: timerSize,
+                          height: timerSize,
                           child: CircularProgressIndicator(
                             value: _progress,
-                            strokeWidth: 12,
+                            strokeWidth: timerSize * 0.048,
                             backgroundColor: color.withOpacity(0.1),
                             color: color,
                             strokeCap: StrokeCap.round,
@@ -515,8 +528,8 @@ class _PomodoroTimerState extends State<PomodoroTimer>
                           children: [
                             Text(
                               _formattedTime,
-                              style: const TextStyle(
-                                fontSize: 56,
+                              style: TextStyle(
+                                fontSize: timeFontSize,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -525,7 +538,7 @@ class _PomodoroTimerState extends State<PomodoroTimer>
                                   ? AppLang.focusPhase
                                   : AppLang.breakPhase,
                               style: TextStyle(
-                                fontSize: 20,
+                                fontSize: phaseFontSize,
                                 letterSpacing: 4,
                                 color: color,
                                 fontWeight: FontWeight.w600,
@@ -538,27 +551,39 @@ class _PomodoroTimerState extends State<PomodoroTimer>
                   );
                 },
               ),
-              const SizedBox(height: 32),
+              SizedBox(height: isMobile ? 16 : 32),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   if (_status != PomodoroStatus.running)
-                    FloatingActionButton(
-                      onPressed: _startTimer,
-                      backgroundColor: color,
-                      child: const Icon(Icons.play_arrow, size: 32),
+                    SizedBox(
+                      width: fabSize,
+                      height: fabSize,
+                      child: FloatingActionButton(
+                        onPressed: _startTimer,
+                        backgroundColor: color,
+                        child: Icon(Icons.play_arrow, size: iconSize),
+                      ),
                     )
                   else
-                    FloatingActionButton(
-                      onPressed: _pauseTimer,
-                      backgroundColor: Colors.amber,
-                      child: const Icon(Icons.pause, size: 32),
+                    SizedBox(
+                      width: fabSize,
+                      height: fabSize,
+                      child: FloatingActionButton(
+                        onPressed: _pauseTimer,
+                        backgroundColor: Colors.amber,
+                        child: Icon(Icons.pause, size: iconSize),
+                      ),
                     ),
                   const SizedBox(width: 24),
-                  FloatingActionButton(
-                    onPressed: _resetTimer,
-                    backgroundColor: Colors.redAccent,
-                    child: const Icon(Icons.stop, size: 32),
+                  SizedBox(
+                    width: fabSize,
+                    height: fabSize,
+                    child: FloatingActionButton(
+                      onPressed: _resetTimer,
+                      backgroundColor: Colors.redAccent,
+                      child: Icon(Icons.stop, size: iconSize),
+                    ),
                   ),
                   const SizedBox(width: 24),
                   IconButton(
@@ -567,7 +592,7 @@ class _PomodoroTimerState extends State<PomodoroTimer>
                       Icons.skip_next,
                       color: Colors.white.withOpacity(0.7),
                     ),
-                    iconSize: 32,
+                    iconSize: iconSize,
                     tooltip: 'Skip phase',
                   ),
                 ],
